@@ -5,6 +5,7 @@ import controllers
 from controllers import EMail
 from infrastructure import all_mailers
 
+
 app = Flask(__name__)
 CORS(app, resources=r'*')
 
@@ -23,8 +24,8 @@ def send_email():
 
 class ServerError(Exception):
     def to_json(self):
-        data = {'status': 'error', 'message': str(self) }
-        return jsonify(**data)
+        payload = {'status': 'error', 'message': str(self) }
+        return jsonify(**payload)
 
 
 @app.errorhandler(ServerError)

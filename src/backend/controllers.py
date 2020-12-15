@@ -6,7 +6,9 @@ from typing import List, Type
 from enforce_typing import enforce_types
 from flask import current_app
 
+
 _valid_email_regex = re.compile('^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$')
+
 
 @enforce_types
 @dataclass
@@ -47,6 +49,10 @@ class IMailer(ABC):
     @staticmethod
     @abstractmethod
     def get_name():
+        """
+        Returns name of the mail delivery service provider.
+        E.g. Mailgun
+        """
         pass
 
 

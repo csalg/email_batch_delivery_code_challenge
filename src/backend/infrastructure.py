@@ -5,6 +5,7 @@ from flask import current_app
 from controllers import IMailer, EMail
 from settings import context
 
+
 def _slice_and_send(email: EMail,
                     dispatch_procedure,
                     first_recipient_index,
@@ -26,6 +27,7 @@ def _slice_and_send(email: EMail,
             return i * max_recipients_per_query
 
     return -1
+
 
 class MailgunMailer(IMailer):
 
@@ -61,7 +63,6 @@ class MailgunMailer(IMailer):
             auth=('api', context['MAILGUN_SECRET'])
         )
         response.raise_for_status()
-
 
 
 class AmazonSESMailer(IMailer):
@@ -106,5 +107,6 @@ class AmazonSESMailer(IMailer):
                 },
                 Source=sender,
             )
+
 
 all_mailers = AmazonSESMailer, MailgunMailer

@@ -3,6 +3,7 @@ from itertools import chain
 import pytest
 from controllers import EMail
 
+
 invalid_addresses = [
     'ajfdsf',
     'fdsa,as@ssdf.com',
@@ -13,6 +14,7 @@ invalid_addresses = [
     '3rwfe///'
 ]
 
+
 def addresses_with_invalid_characters():
     invalid_address_characters = '!@#$%^&*(){}:"|<>?'
     for invalid_character in invalid_address_characters:
@@ -20,6 +22,7 @@ def addresses_with_invalid_characters():
             yield valid_address[:position] + invalid_character + valid_address[position:]
 
 valid_address = 'test@test.com'
+
 
 def test_EMail():
 

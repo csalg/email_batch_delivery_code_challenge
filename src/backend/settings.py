@@ -14,6 +14,7 @@ __environment_variables_int = [
     "MAILGUN_MAX_RECIPIENTS_PER_QUERY",
 ]
 
+
 def __create_context():
     env = {}
     for key in __environment_variables:
@@ -21,5 +22,6 @@ def __create_context():
     for key in __environment_variables_int:
         env[key] = int(os.environ[key])
     return immutabledict(env)
+
 
 context = __create_context()
