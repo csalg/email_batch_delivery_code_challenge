@@ -14,9 +14,9 @@ For the backend I settle on this architecture:
 
 (Remark: since UML lacks notation for standalone functions, I have modeled those as static methods of the 'global' class.)
 
-For the frontend I sat down and drew a wireframe. I could have just delivered a form, but then why use React, so I chose to deliver a step sequence.
+For the frontend drew a this wireframe:
 
-![](img/wireframe.jpg)
+<img src="img/wireframe.jpg" width='400px'>
 
 The definition of prototyping in the SDLC is to write the minimum amount of code necessary to clarify how to implement a certain feature. In this case, the only technical challenge was to understand how the APIs for Mailgun and Amazon SES work, so I signed up for their services and got wrote working queries using Postman. I then wrote the relevant code using the `requests` and `boto3` libraries.
 
@@ -26,8 +26,8 @@ For the construction phase I implemented everything using Python for the backend
 
 During construction I also implemented some error handling which hadn't been well-thought out in the previous phase. There is some trivial frontend validation and otherwise errors are produced by the server and presented in an alert box:
 
-![](img/error1.png)
-![](img/error2.png)
+<img src="img/error1.png" width='400px'>
+<img src="img/error2.png" width='400px'>
 
 ## Deployment
 
