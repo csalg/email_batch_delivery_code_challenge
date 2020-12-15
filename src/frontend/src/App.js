@@ -2,7 +2,7 @@ import './App.scss';
 import React from "react";
 
 import 'antd/dist/antd.css';
-import {Button, Form, Input, Select, Steps} from 'antd';
+import {Alert, Button, Form, Input, Select, Steps} from 'antd';
 import {
     CloudTwoTone,
     FileTextOutlined,
@@ -12,6 +12,8 @@ import {
     UsergroupAddOutlined
 } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
+import {post} from "./services";
+import {API_ENDPOINT} from "./environment";
 
 const {Step} = Steps;
 const {Option} = Select;
@@ -27,20 +29,53 @@ export default class extends React.Component {
             Sender: "",
             Recipients: [],
             Subject: "",
-            Body: ""
+            Body: "",
+            error: ""
         };
         this.nextStep = this.nextStep.bind(this);
     }
 
-    nextStep(values) {
-        this.setState({
-            currentStep: this.state.currentStep + 1
-        })
+
+    async nextStep(values) {
+
         if (values) {
             for (const [key, value] of Object.entries(values)) {
-                this.setState({[key]: value})
+                console.log(key, value)
+                await this.setStateAsync({[key]: value})
             }
         }
+        if (this.state.currentStep === 2) {
+            const payload = {
+                'sender': this.state.Sender,
+                'recipients': this.state.Recipients.split('\n'),
+                'subject': this.state.Subject,
+                'body': this.state.Body
+            }
+            console.log(payload)
+            post(API_ENDPOINT, payload)
+                .then(_ => {
+                    this.setState({
+                        currentStep: this.state.currentStep + 1
+                    })
+                })
+                .catch(error => {
+                    if (error.response) {
+                        console.log(error.response)
+                        this.setStateAsync({error: error.response.data.message})
+                    }
+                    console.log(error)
+                });
+        } else {
+            this.setState({
+                currentStep: this.state.currentStep + 1
+            })
+        }
+    }
+
+    setStateAsync(state) {
+        return new Promise((resolve) => {
+            this.setState(state, resolve)
+        });
     }
 
     render() {
@@ -52,7 +87,7 @@ export default class extends React.Component {
                 <div className="flex flex-column wrapper ">
                     <Progress currentStep={this.state.currentStep}/>
                     <main className={'flex flex-column'}>
-                        <Step nextStep={this.nextStep}/>
+                        <Step nextStep={this.nextStep} error={this.state.error}/>
                     </main>
                 </div>
             </div>
@@ -121,8 +156,8 @@ const Message = ({nextStep}) => (
 
                 </Form.Item>
                 <Form.Item
-                    name="Message"
-                    label="Message"
+                    name="Body"
+                    label="Body"
                     rules={[
                         {
                             required: true,
@@ -141,19 +176,30 @@ const Message = ({nextStep}) => (
     </Form>
 )
 
-const Recipients = ({nextStep}) => {
+const Recipients = ({nextStep, error}) => {
 
     const verifiedAddresses = [
         "verified@domain.com",
         "also.verified@domain.com"
     ]
 
+    const Error = _ => {
+        if (error) {
+            return (
+                <div style={{marginBottom: '1em'}}>
+                    <Alert type='error' message={error} showicon/>
+                </div>
+            )
+        }
+        return <span/>
+    }
+
     return (
         <Form {...formLayout} style={{display: 'flex', flexGrow: 1}} onFinish={nextStep}>
             <div className="card flex flex-column">
                 <div>
                     <Form.Item
-                        name="sender"
+                        name="Sender"
                         label="Sender"
                         rules={[
                             {
@@ -169,7 +215,7 @@ const Recipients = ({nextStep}) => {
                         </Select>
                     </Form.Item>
                     <Form.Item
-                        name="recipients"
+                        name="Recipients"
                         label="Recipients"
                         rules={[
                             {
@@ -180,6 +226,7 @@ const Recipients = ({nextStep}) => {
                         <TextArea placeholder={'List of recipient addresses (one per line).'}/>
                     </Form.Item>
                 </div>
+                <Error/>
 
                 <Form.Item {...nextButtonLayout}>
                     <Button type="primary" htmlType="submit">

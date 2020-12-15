@@ -1,10 +1,10 @@
-import email
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, Type
 
 from enforce_typing import enforce_types
+from flask import current_app
 
 _valid_email_regex = re.compile('^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$')
 
@@ -44,21 +44,30 @@ class IMailer(ABC):
         """
         pass
 
+    @staticmethod
+    @abstractmethod
+    def get_name():
+        pass
+
 
 def send_email(email: EMail, mailers: List[Type[IMailer]]):
+    errors = {}
     first_recipient_index = 0
+    current_app.logger.info('WTF')
     for mailer in mailers:
         try:
+            current_app.logger.info(mailer.get_name())
             first_recipient_index = \
                 mailer.send(email, first_recipient_index=first_recipient_index)
-        except:
-            # LOG
-            pass
+        except Exception as e:
+            errors[mailer.get_name()] = str(e)
         if first_recipient_index == -1:
             break
     if first_recipient_index != -1:
+        if errors:
+            raise Exception(f"Internal server errors found:\n{errors}")
         raise Exception(f"Delivery failed before all e-mails could be sent. "
-                        f"Mail was sent to only the first {first_recipient_index} recipients")
+                        f"Mail was sent to only the first {first_recipient_index} recipients.")
     return
 
 
