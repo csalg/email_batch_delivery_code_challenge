@@ -20,24 +20,25 @@ class EMail:
 
     def __post_init__(self):
         if not _valid_email_regex.match(self.sender):
-            raise ValueError(f"Sender address '{self.sender}' is incorrectly formatted!")
+            raise MailSystemException(f"Sender address '{self.sender}' is incorrectly formatted!")
 
         if not self.recipients:
-            raise ValueError("Recipients list is empty.")
+            raise MailSystemException("Recipients list is empty.")
 
         invalid_recipients = filter(lambda address : not _valid_email_regex.match(address), self.recipients)
         first_invalid = next(invalid_recipients, None)
         if first_invalid:
-            raise ValueError(f"Incorrectly formatted recipient addresses found, the first one is: '{first_invalid}'")
+            raise MailSystemException(f"Incorrectly formatted recipient addresses found, the first one is: '{first_invalid}'")
 
         return self
 
+class MailSystemException(Exception):
+    pass
 
 class IMailer(ABC):
 
-    @staticmethod
     @abstractmethod
-    def send(email: EMail, first_recipient_index=0) -> int:
+    def send(self, email: EMail, first_recipient_index=0) -> int:
         """
         Send submits queries to the delivery service.
         In case of an error, returns index of first non-submitted
@@ -46,9 +47,8 @@ class IMailer(ABC):
         """
         pass
 
-    @staticmethod
     @abstractmethod
-    def get_name():
+    def get_name(self):
         """
         Returns name of the mail delivery service provider.
         E.g. Mailgun
@@ -56,10 +56,10 @@ class IMailer(ABC):
         pass
 
 
+
 def send_email(email: EMail, mailers: List[Type[IMailer]]):
     errors = {}
     first_recipient_index = 0
-    current_app.logger.info('WTF')
     for mailer in mailers:
         try:
             current_app.logger.info(mailer.get_name())

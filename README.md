@@ -1,3 +1,14 @@
+## UPDATE: Interview Feedback
+
+The design and architecture were well-received in the interview. Two senior developers were very generous with their time and knowledge and suggested some changes in the implementation that would help scalability and readability of the code:
+* Better error handling through custom exceptions.
+* Open a session and re-use it for all requests with the same provider.
+* Use a superclass and a factory method instead of standalone function for the mailers recipient batching.
+* Use a queue and a pool to make better use of computer resources.
+
+Their ideas were, naturally, great; these are people that make python work with millions of requests per minute. So I am implementing them. I have implemented the first three points and only need to implement the pool.
+
+
 ![](img/demo.gif)
 
 This code challenge is a good opportunity to document my current workflow. I split development work into four phases: requirements, architecture & prototyping, construction & testing, deployment. This follows the classic SDLC and is a design-thinking approach which I take from 'Code Complete'
@@ -8,13 +19,13 @@ The wording of the problem statement is quite open-ended: a multi-user platform 
 
 ## Architecture & Prototyping
 
-For the backend I settle on this architecture:
+For the backend I settled on this architecture:
 
 ![](img/architecture.png)
 
 (Remark: since UML lacks notation for standalone functions, I have modeled those as static methods of the 'global' class.)
 
-For the frontend drew a this wireframe:
+For the frontend I drew this wireframe:
 
 <img src="img/wireframe.jpg" width='400px'>
 
